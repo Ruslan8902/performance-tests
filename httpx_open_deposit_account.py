@@ -3,7 +3,6 @@ import time
 
 baseUrl = "http://localhost:8003/api/v1"
 
-
 # Инициализируем JSON-данные, которые будем отправлять в API
 create_user_payload = {
     "email": f"user.{time.time()}@example.com",
