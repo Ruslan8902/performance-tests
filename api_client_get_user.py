@@ -1,7 +1,4 @@
-import time
-
 from clients.http.gateway.users.client import (
-    CreateUserRequestDict,
     build_users_gateway_http_client
 )
 
