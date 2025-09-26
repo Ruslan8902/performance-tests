@@ -1,6 +1,7 @@
 from enum import StrEnum
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, HttpUrl
+from tools.fakers import fake
 
 
 class OperationType(StrEnum):
@@ -51,7 +52,7 @@ class OperationReceiptSchema(BaseModel):
     """
     Описание структуры чека.
     """
-    url: str
+    url: HttpUrl
     document: str
 
 
@@ -105,113 +106,89 @@ class CreateOperationResponseSchema(BaseModel):
     operation: OperationSchema
 
 
-class MakeFeeOperationRequestSchema(BaseModel):
+class MakeOperationRequestSchema(BaseModel):
     """
-    Структура данных для создания операции комиссии.
+    Базовая структура тела запроса для создания финансовой операции.
     """
     model_config = ConfigDict(populate_by_name=True)
 
-    status: OperationStatus
-    amount: float
+    status: OperationStatus = Field(default_factory=lambda: fake.enum(OperationStatus))
+    amount: float = Field(default_factory=lambda: fake.amount())
     card_id: str = Field(alias="cardId")
     account_id: str = Field(alias="accountId")
+
+
+class MakeFeeOperationRequestSchema(MakeOperationRequestSchema):
+    """
+    Структура данных для создания операции комиссии.
+    """
+    pass
 
 
 class MakeFeeOperationResponseSchema(BaseModel):
     operation: OperationSchema
 
 
-class MakeTopUpOperationRequestSchema(BaseModel):
+class MakeTopUpOperationRequestSchema(MakeOperationRequestSchema):
     """
     Структура данных для создания операции пополнения.
     """
-    model_config = ConfigDict(populate_by_name=True)
-
-    status: OperationStatus
-    amount: float
-    card_id: str = Field(alias="cardId")
-    account_id: str = Field(alias="accountId")
+    pass
 
 
 class MakeTopUpOperationResponseSchema(BaseModel):
     operation: OperationSchema
 
 
-class MakeCashbackOperationRequestSchema(BaseModel):
+class MakeCashbackOperationRequestSchema(MakeOperationRequestSchema):
     """
     Структура данных для создания операции кэшбэка.
     """
-    model_config = ConfigDict(populate_by_name=True)
-
-    status: OperationStatus
-    amount: float
-    card_id: str = Field(alias="cardId")
-    account_id: str = Field(alias="accountId")
+    pass
 
 
 class MakeCashbackOperationResponseSchema(BaseModel):
     operation: OperationSchema
 
 
-class MakeTransferOperationRequestSchema(BaseModel):
+class MakeTransferOperationRequestSchema(MakeOperationRequestSchema):
     """
     Структура данных для создания операции перевода.
     """
-    model_config = ConfigDict(populate_by_name=True)
-
-    status: OperationStatus
-    amount: float
-    card_id: str = Field(alias="cardId")
-    account_id: str = Field(alias="accountId")
+    pass
 
 
 class MakeTransferOperationResponseSchema(BaseModel):
     operation: OperationSchema
 
 
-class MakePurchaseOperationRequestSchema(BaseModel):
+class MakePurchaseOperationRequestSchema(MakeOperationRequestSchema):
     """
     Структура данных для создания операции покупки.
     """
-    model_config = ConfigDict(populate_by_name=True)
-
-    status: OperationStatus
-    amount: float
-    card_id: str = Field(alias="cardId")
-    account_id: str = Field(alias="accountId")
-    category: str
+    category: str = Field(default_factory=lambda: fake.category())
 
 
 class MakePurchaseOperationResponseSchema(BaseModel):
     operation: OperationSchema
 
 
-class MakeBillPaymentOperationRequestSchema(BaseModel):
+class MakeBillPaymentOperationRequestSchema(MakeOperationRequestSchema):
     """
     Структура данных для создания операции оплаты по счету.
     """
-    model_config = ConfigDict(populate_by_name=True)
-
-    status: OperationStatus
-    amount: float
-    card_id: str = Field(alias="cardId")
-    account_id: str = Field(alias="accountId")
+    pass
 
 
 class MakeBillPaymentOperationResponseSchema(BaseModel):
     operation: OperationSchema
 
 
-class MakeCashWithdrawalOperationRequestSchema(BaseModel):
+class MakeCashWithdrawalOperationRequestSchema(MakeOperationRequestSchema):
     """
     Структура данных для создания операции снятия наличных денег.
     """
-    model_config = ConfigDict(populate_by_name=True)
-
-    status: OperationStatus
-    amount: float
-    card_id: str = Field(alias="cardId")
-    account_id: str = Field(alias="accountId")
+    pass
 
 
 class MakeCashWithdrawalOperationResponseSchema(BaseModel):
