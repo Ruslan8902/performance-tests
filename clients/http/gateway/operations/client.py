@@ -1,7 +1,11 @@
 from httpx import Response, QueryParams
+from locust.env import Environment
 
-from clients.http.client import HTTPClient
-from clients.http.gateway.client import build_gateway_http_client
+from clients.http.client import HTTPClient, HTTPClientExtensions
+from clients.http.gateway.client import (
+    build_gateway_http_client,
+    build_gateway_locust_http_client
+)
 from clients.http.gateway.operations.schema import (
     GetOperationsQuerySchema, GetOperationsSummaryQuerySchema, MakeFeeOperationRequestSchema,
     MakeTopUpOperationRequestSchema, MakeCashbackOperationRequestSchema, MakeTransferOperationRequestSchema,
@@ -25,7 +29,10 @@ class OperationsGatewayHTTPClient(HTTPClient):
         :param operation_id: Идентификатор операции.
         :return: Ответ от сервера (объект httpx.Response).
         """
-        return self.get(url=f"/api/v1/operations/{operation_id}")
+        return self.get(
+            url=f"/api/v1/operations/{operation_id}",
+            extensions=HTTPClientExtensions(route="/api/v1/operations/{operation_id}")
+        )
 
     def get_operation_receipt_api(self, operation_id: str) -> Response:
         """
@@ -34,7 +41,10 @@ class OperationsGatewayHTTPClient(HTTPClient):
         :param operation_id: Идентификатор операции.
         :return: Ответ от сервера (объект httpx.Response).
         """
-        return self.get(url=f"/api/v1/operations/operation-receipt/{operation_id}")
+        return self.get(
+            url=f"/api/v1/operations/operation-receipt/{operation_id}",
+            extensions=HTTPClientExtensions(route="/api/v1/operations/operation-receipt/{operation_id}")
+        )
 
     def get_operations_api(self, query: GetOperationsQuerySchema) -> Response:
         """
@@ -45,7 +55,9 @@ class OperationsGatewayHTTPClient(HTTPClient):
         """
         return self.get(
             url="/api/v1/operations",
-            params=QueryParams(**query.model_dump(by_alias=True)))
+            params=QueryParams(**query.model_dump(by_alias=True)),
+            extensions=HTTPClientExtensions(route="/api/v1/operations")
+        )
 
     def get_operations_summary_api(self, query: GetOperationsSummaryQuerySchema) -> Response:
         """
@@ -56,7 +68,9 @@ class OperationsGatewayHTTPClient(HTTPClient):
         """
         return self.get(
             url="/api/v1/operations/operation-summary",
-            params=QueryParams(**query.model_dump(by_alias=True)))
+            params=QueryParams(**query.model_dump(by_alias=True)),
+            extensions=HTTPClientExtensions(route="/api/v1/operations/operations-summary")
+        )
 
     def make_fee_operation_api(self, request: MakeFeeOperationRequestSchema) -> Response:
         """
@@ -218,3 +232,16 @@ def build_operations_gateway_http_client() -> OperationsGatewayHTTPClient:
     :return: Готовый к использованию DocumentsGatewayHTTPClient.
     """
     return OperationsGatewayHTTPClient(client=build_gateway_http_client())
+
+
+def build_operations_gateway_locust_http_client(environment: Environment) -> OperationsGatewayHTTPClient:
+    """
+    Функция создаёт экземпляр OperationsGatewayHTTPClient адаптированного под Locust.
+
+    Клиент автоматически собирает метрики и передаёт их в Locust через хуки.
+    Используется исключительно в нагрузочных тестах.
+
+    :param environment: объект окружения Locust.
+    :return: экземпляр OperationsGatewayHTTPClient с хуками сбора метрик.
+    """
+    return OperationsGatewayHTTPClient(client=build_gateway_locust_http_client(environment))
