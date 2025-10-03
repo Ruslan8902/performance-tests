@@ -51,9 +51,9 @@ class GetAccountsTaskSet(GatewayHTTPTaskSet):
         )
 
 
-class GetDocumentsScenarioUser(User):
+class GetAccountsScenarioUser(User):
     """
-    Пользователь Locust, исполняющий последовательный сценарий получения документов.
+    Пользователь Locust, исполняющий сценарий получения счетов.
     """
     host = "localhost"
     tasks = [GetAccountsTaskSet]
