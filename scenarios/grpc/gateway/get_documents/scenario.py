@@ -1,4 +1,4 @@
-from locust import User, between, task
+from locust import task
 
 from clients.grpc.gateway.locust import GatewayGRPCSequentialTaskSet
 from contracts.services.gateway.accounts.rpc_open_savings_account_pb2 import OpenSavingsAccountResponse

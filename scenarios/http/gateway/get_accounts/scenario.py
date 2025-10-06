@@ -1,4 +1,4 @@
-from locust import User, between, task
+from locust import task
 
 # Импортируем схемы ответов, чтобы типизировать shared state
 from clients.http.gateway.locust import GatewayHTTPTaskSet
