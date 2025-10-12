@@ -85,6 +85,8 @@ class GetOperationsSummaryResponseSchema(BaseModel):
     """
     Описание структуры ответа получения сводки по операциям.
     """
+    model_config = ConfigDict(populate_by_name=True)
+
     summary: OperationsSummarySchema
 
 

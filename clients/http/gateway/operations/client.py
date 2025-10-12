@@ -67,7 +67,7 @@ class OperationsGatewayHTTPClient(HTTPClient):
         :return: Объект httpx.Response с данными о счетах.
         """
         return self.get(
-            url="/api/v1/operations/operation-summary",
+            url="/api/v1/operations/operations-summary",
             params=QueryParams(**query.model_dump(by_alias=True)),
             extensions=HTTPClientExtensions(route="/api/v1/operations/operations-summary")
         )
