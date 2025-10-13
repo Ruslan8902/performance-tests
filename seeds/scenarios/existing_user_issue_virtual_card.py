@@ -18,7 +18,7 @@ class ExistingUserIssueVirtualCardSeedsScenario(SeedsScenario):
         return SeedsPlan(
             users=SeedUsersPlan(
                 count=300,  # Количество пользователей
-                deposit_accounts=SeedAccountsPlan(
+                debit_card_accounts=SeedAccountsPlan(
                     count=1
                 )
             ),
