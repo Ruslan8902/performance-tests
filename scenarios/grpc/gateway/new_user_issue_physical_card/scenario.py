@@ -1,16 +1,16 @@
 from locust import task
 
-from clients.http.gateway.accounts.schema import OpenDebitCardAccountResponseSchema
-from clients.http.gateway.locust import GatewayHTTPSequentialTaskSet
-from clients.http.gateway.users.schema import CreateUserResponseSchema
+from clients.grpc.gateway.locust import GatewayGRPCSequentialTaskSet
+from contracts.services.gateway.accounts.rpc_open_debit_card_account_pb2 import OpenDebitCardAccountResponse
+from contracts.services.gateway.users.rpc_create_user_pb2 import CreateUserResponse
 from tools.locust.user import LocustBaseUser
 
 
 # Класс сценария: описывает последовательный флоу нового пользователя
-class IssuePhysicalCardSequentialTaskSet(GatewayHTTPSequentialTaskSet):
+class IssuePhysicalCardSequentialTaskSet(GatewayGRPCSequentialTaskSet):
     # Храним ответы от предыдущих шагов, чтобы использовать их в следующих задачах
-    create_user_response: CreateUserResponseSchema | None = None
-    open_open_debit_card_account_response: OpenDebitCardAccountResponseSchema | None = None
+    create_user_response: CreateUserResponse | None = None
+    open_open_debit_card_account_response: OpenDebitCardAccountResponse | None = None
 
     @task
     def create_user(self):
@@ -41,6 +41,6 @@ class IssuePhysicalCardSequentialTaskSet(GatewayHTTPSequentialTaskSet):
 
 
 # Класс пользователя — связывает TaskSet со средой исполнения Locust
-class MakeTopUpOperationScenarioUser(LocustBaseUser):
+class IssuePhysicalCardScenarioUser(LocustBaseUser):
     # Назначаем сценарий, который будет выполняться этим пользователем
     tasks = [IssuePhysicalCardSequentialTaskSet]
