@@ -13,6 +13,8 @@ from clients.http.gateway.cards.schema import (
     IssuePhysicalCardResponseSchema
 )
 
+from tools.routes import APIRoutes
+
 
 class CardsGatewayHTTPClient(HTTPClient):
     """
@@ -27,7 +29,7 @@ class CardsGatewayHTTPClient(HTTPClient):
         :return: Ответ от сервера (объект httpx.Response).
         """
         return self.post(
-            url="/api/v1/cards/issue-virtual-card",
+            url=f"{APIRoutes.CARDS}/issue-virtual-card",
             json=request.model_dump(by_alias=True)
         )
 
@@ -39,7 +41,7 @@ class CardsGatewayHTTPClient(HTTPClient):
         :return: Ответ от сервера (объект httpx.Response).
         """
         return self.post(
-            url="/api/v1/cards/issue-physical-card",
+            url=f"{APIRoutes.CARDS}/issue-physical-card",
             json=request.model_dump(by_alias=True)
         )
 
