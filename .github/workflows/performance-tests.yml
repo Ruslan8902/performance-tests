@@ -72,6 +72,37 @@ jobs:
       - name: Run load tests and generate HTML report
         run: locust --config=${{ github.event.inputs.SCENARIO }} --html=./reports/${{ github.run_id }}/index.html
 
+      - name: Upload reports folder
+        uses: actions/upload-artifact@v5
+        with:
+          name: reports
+          path: ./reports
+
+      # 10. Корректно останавливаем docker-контейнеры и удаляем volume-ы (например, temp-файлы)
+      - name: Stop test services
+        if: always()
+        run: docker compose -f docker-compose.ci.yaml down -v
+        working-directory: performance-qa-engineer-course
+
+  publish-report:
+    runs-on: ubuntu-latest
+    needs: run-tests
+    if: always()
+    steps:
+      - name: Download allure-results folder
+        uses: actions/download-artifact@v4
+        with:
+          name: reports
+          path: ./reports
+
+      - name: Get
+        uses: actions/checkout@v5  # Опять клонируем репозиторий, чтобы получить историю отчётов
+        if: always()  # Всегда выполняем, независимо от успеха или неудачи предыдущих шагов
+        continue-on-error: true  # Если здесь возникнет ошибка, workflow всё равно продолжит выполнение
+        with:
+          ref: gh-pages  # Указываем ветку gh-pages для получения отчётов
+          path: gh-pages  # Указываем путь для сохранения отчётов
+
       # 9. Деплой HTML-отчёта в GitHub Pages, чтобы можно было посмотреть результаты в браузере
       - name: Deploy HTML report to GitHub Pages
         if: always()
@@ -81,9 +112,3 @@ jobs:
           keep_files: true  # Сохраняем предыдущие отчёты
           publish_dir: reports  # Публикуем директорию reports
           publish_branch: gh-pages  # На ветке gh-pages
-
-      # 10. Корректно останавливаем docker-контейнеры и удаляем volume-ы (например, temp-файлы)
-      - name: Stop test services
-        if: always()
-        run: docker compose -f docker-compose.ci.yaml down -v
-        working-directory: performance-qa-engineer-course
